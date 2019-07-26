@@ -22,7 +22,9 @@ Only key codes are uploaded. Please check the whole files and run the job on the
         ```
         /home/users/industry/ai-hpc/apacsc13/benchmarks
         ```
-* Horovod
+* Horovod 0.13.10
+* OpenMPI 3.0.0
+* CUDA 10.0.130
 
 ### 2) Model
 * ResNet-50
@@ -37,11 +39,31 @@ Only key codes are uploaded. Please check the whole files and run the job on the
 
 ## Optimizations we made
 
+### 1) Data preprocessing
+    
+* We changed input data format from .jpg to *tf-records* to for faster running and better accuracy.
+    * *setDataset.sh*
+    * *build_imagenet_data.pbs*
+
+### 2) Hyperparameter tuning
+
+* We adjusted *batch_size*, *optimizer*, *num_epochs*, *weight_decay* to obtain optimal accuracy and total images/sec.
+    * Check the end of the final PBS file.
+    * For example,
+        ```
+        python tf_cnn_benchmarks.py --data_format=NCHW --batch_size=256 \
+        --model=resnet50 --optimizer=momentum --variable_update=replicated \
+        --nodistortions --gradient_repacking=8 --num_gpus=8 \
+        --num_epochs=10 --weight_decay=1e-3 --data_dir=${DATA_DIR} --use_fp16 \
+        --train_dir=${CKPT_DIR}
+        ```
+* For details, see the official paper.
+
 ## Results
 
 ### 1) Performances
-* training
-* computing
+* Training
+* Computing
 
 ### 2) Improvements
 
@@ -53,7 +75,7 @@ Go to
 ```
 final_code_loc
 ```
-on server and run 
+on the NSCC GTX-1 server and run 
 ```
 qsub final_code.pbs
 ```
