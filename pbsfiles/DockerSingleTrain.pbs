@@ -9,7 +9,7 @@
 image="nvcr.io/nvidia/tensorflow:18.08-py2"
 
 layers=50
-batch=64
+batch=256
 
 model=resnet
 dataset=imagenet
