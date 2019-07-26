@@ -65,7 +65,7 @@ Only key codes are uploaded. Please check the whole files and run the job on the
     * *batch_size=256*
     * *optimizer=momentum*
     * *num_epochs=10 weight_decay=1e-3* 
-    * will make maximum accuracy (about 93.088).
+    * will make maximum accuracy about 93.088 and total images/sec=5436.71.
 
 * For details, see the official paper.
 
