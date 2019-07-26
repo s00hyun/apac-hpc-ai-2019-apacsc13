@@ -1,0 +1,40 @@
+#!/bin/bash
+#PBS -l select=1:ncpus=40:ngpus=8:mpiprocs=8
+#PBS -l walltime=02:00:00
+#PBS -q dgx
+#PBS -N tf-resnet50
+#PBS -j oe
+#PBS -P 21170158
+
+image="nvcr.io/nvidia/tensorflow:18.08-py2"
+
+layers=50
+batch=64
+
+model=resnet
+dataset=imagenet
+
+
+if [ x"$PBS_O_WORKDIR" != x ] ; then
+ cd "$PBS_O_WORKDIR" || exit $?
+fi
+
+data="/home/users/industry/ai-hpc/apacsc13/scratch/ILSVRC2012"
+stdout="$PWD/stdout.$PBS_JOBID"
+stderr="$PWD/stderr.$PBS_JOBID"
+/usr/local/mpi/bin/mpirun --version
+nscc-docker run --lustre $image <<EOF
+cd /home/users/industry/ai-hpc/apacsc13/source/benchmarks/scripts/tf_cnn_benchmarks
+pip show tensorflow
+mpiexec --version
+nvidia-smi
+#kill -9 $(nvidia-smi | sed -n 's/|\s*[0-9]*\s*\([0-9]*\)\s*.*/\1/p' | sort | uniq | sed '/^$/d')
+DATA_DIR=/home/users/industry/ai-hpc/apacsc13/scratch/ILSVRC2012/ImageNet2012
+CKPT_DIR=/home/users/industry/ai-hpc/apacsc13/ckpt
+#mpiexec --allow-run-as-root -np 8
+python tf_cnn_benchmarks.py --data_format=NCHW --batch_size=256 \
+--model=resnet50 --optimizer=momentum --variable_update=replicated \
+--nodistortions --gradient_repacking=8 --num_gpus=8 \
+--num_epochs=10 --weight_decay=1e-3 --data_dir=${DATA_DIR} --use_fp16 \
+--train_dir=${CKPT_DIR}
+EOF

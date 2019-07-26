@@ -61,24 +61,36 @@ Only key codes are uploaded. Please check the whole files and run the job on the
 
 ## Results
 
-### 1) Performances
-* Training
-* Computing
+* From some experimental results, we expect that 
+    * *batch_size=256*
+    * *optimizer=momentum*
+    * *num_epochs=10 weight_decay=1e-3* 
+    * will make maximum accuracy (about 93.088).
 
-### 2) Improvements
-
-### 3) Advantages
+* For details, see the official paper.
 
 ## Running the code
 
-Go to 
-```
-final_code_loc
-```
-on the NSCC GTX-1 server and run 
-```
-qsub final_code.pbs
-```
+1. Go to 
+    ```
+    /ILSVRC2012
+    ```
+    on the NSCC GTX-1 server and run 
+    ```
+    ./setdataset.sh
+    ```
+2. Go to
+    ```
+    /home/project/21170158/apacsc13/pbsfiles
+    ```
+    on the NSCC GTX-1 server and run 
+    ```
+    qsub DockerSingleTrain.pbs
+    ```
+    or
+    ```
+    qsub DockerHorovod.pbs
+    ```
 
 ## Authors
 
