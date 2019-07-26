@@ -63,11 +63,16 @@ Only key codes are uploaded. Please check the whole files and run the job on the
 
 * From some experimental results, we expect that 
     * *batch_size=256*
-    * *optimizer=momentum*
     * *num_epochs=10 weight_decay=1e-3* 
-    * will make maximum accuracy about 93.088 and total images/sec=5436.71.
+    * will make maximum accuracy about 93.088 and total images/sec=5436.71, only in case of Momentum optimizer.
+
+* Doing experiments with other optimizers, it was found that SGD optimizer gave the best performance where other conditions are the same.
+
+* However, since we could not write complete code of distributed training code based on Horovod, we need more practice and effort to complete this competition.
 
 * For details, see the official paper.
+
+    ![accuracy_by_optimizer](documents/figure/accuracy_by_optimizer.png)
 
 ## Running the code
 
