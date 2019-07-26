@@ -2,11 +2,13 @@
 
 This repository contains the final source code and job scripts of **team GIST**, for [2019 APAC HPC/AI competition](https://hpcadvisorycouncil.com/events/2019/APAC-AI-HPC/).
 
-## Getting Started
+Only key codes are uploaded. Please check the whole files and run the job on the NSCC server.
+
+## Login information
 
 * Login ID: apacsc13
 
-### Information of the base code
+## Base code information
 
 ### 1) Framework
 * Tensorflow (from [Tensorflow Benchmarks](https://github.com/tensorflow/benchmarks))
