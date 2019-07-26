@@ -1,0 +1,71 @@
+#!/bin/bash
+#PBS -l select=2:ncpus=40:ngpus=8:mpiprocs=8
+#PBS -l walltime=00:10:00
+#PBS -q dgx
+#PBS -N horovodDocker
+#PBS -j oe
+#PBS -P 21170158
+
+image="nvcr.io/nvidia/tensorflow:18.09-py2"
+
+layers=50
+batch=64
+
+model=resnet
+dataset=imagenet
+
+
+if [ x"$PBS_O_WORKDIR" != x ] ; then
+ cd "$PBS_O_WORKDIR" || exit $?
+fi
+
+echo === PBS_NODEFILE
+cat $PBS_NODEFILE
+echo === PBS_NODEFILE
+
+## This MPI is not aware of job scheduler
+## manually create host file
+hostfile="hostfile.$PBS_JOBID"
+WCOLL="wcoll.$PBS_JOBID"
+export WCOLL
+sort $PBS_NODEFILE | uniq > $WCOLL
+((np=0))
+for h in `cat $WCOLL` ; do
+n=`grep -cx "$h" "$PBS_NODEFILE"`
+echo $h slots=$n
+((np=np+n))
+done > $hostfile
+
+
+# For multinode jobs the execjob_prologue hook must run on the sister MoM in the other vnodes
+# This happens in two circumstances
+#   An MPI application which is tightly integrated with PBS is used
+#   A process is launched from the sister MoM with pbs-attach or tm_spawn
+#      (which happens when pbsdsh is used)
+#
+# This MPI is not tightly integrated so need this:
+pbsdsh hostname
+
+# gets hosts from $WCOLL
+PDSH_RCMD_TYPE=ssh ; export PDSH_RCMD_TYPE=ssh
+/home/app/dgx/usr/bin/pdsh -f 1 nvidia-smi
+
+data="/home/userse/industry/ai-hpc/apacsc13/scratch/ILSVRC2012"
+stdout="$PWD/stdout.$PBS_JOBID"
+stderr="$PWD/stderr.$PBS_JOBID"
+/usr/local/mpi/bin/mpirun --version
+nscc-docker run --lustre $image <<EOF
+cd /home/users/industry/ai-hpc/apacsc13/source/benchmarks/scripts/tf_cnn_benchmarks
+pip show tensorflow
+mpiexec --version
+nvidia-smi
+kill -9 $(nvidia-smi | sed -n 's/|\s*[0-9]*\s*\([0-9]*\)\s*.*/\1/p' | sort | uniq | sed '/^$/d')
+DATA_DIR=/home/users/industry/ai-hpc/apacsc13/scratch/ILSVRC2012/ImageNet2012
+CKPT_DIR=/home/users/industry/ai-hpc/apacsc13/ckpt
+mpiexec --allow-run-as-root -np 8 python tf_cnn_benchmarks.py --data_format=NCHW --batch_size=16 \
+--model=resnet50 --optimizer=momentum --variable_update=replicated \
+--nodistortions --gradient_repacking=8 --allow_growth=True --gpu_memory_frac_for_testing=0.9 \
+--num_gpus=8 \
+--num_epochs=1 --weight_decay=1e-4 --data_dir=${DATA_DIR} --use_fp16 \
+--train_dir=${CKPT_DIR}
+EOF
