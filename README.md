@@ -1,6 +1,6 @@
 # apac-hpc-ai-2019-apacsc13
 
-This repository contains the final source code and job scripts of team GIST, for [2019 APAC HPC/AI competition](https://hpcadvisorycouncil.com/events/2019/APAC-AI-HPC/).
+This repository contains the final source code and job scripts of **team GIST**, for [2019 APAC HPC/AI competition](https://hpcadvisorycouncil.com/events/2019/APAC-AI-HPC/).
 
 ## Getting Started
 
