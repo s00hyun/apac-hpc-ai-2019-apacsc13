@@ -4,15 +4,33 @@ This repository contains the final source code and job scripts of **team GIST**,
 
 ## Getting Started
 
-* Login id: apacsc13
+* Login ID: apacsc13
 
 ### Information of the base code
 
-What things you need to install the software and how to install them
+### 1) Framework
+* Tensorflow (from [Tensorflow Benchmarks](https://github.com/tensorflow/benchmarks))
+    ```
+    commit ID:  4828965154c424bc61a7ec361edb67bb267869f4
+    commit date: Thu Apr 11 21:37:22 2019 -0700
+    ```
 
-```
-Give examples
-```
+    * File location on the server: 
+        ```
+        /home/users/industry/ai-hpc/apacsc13/benchmarks
+        ```
+* Horovod
+
+### 2) Model
+* ResNet-50
+
+### 3) Dataset
+* ImageNet 2012
+
+    * File location on the server: 
+        ```
+        /scratch/users/industry/ai-hpc/apacsc13/ILSVRC2012
+        ```
 
 ## Optimizations we made
 
@@ -28,10 +46,13 @@ Give examples
 
 ## Running the code
 
-Explain how to run 
-
+Go to 
 ```
-Give an example
+final_code_loc
+```
+on server and run 
+```
+qsub final_code.pbs
 ```
 
 ## Authors
